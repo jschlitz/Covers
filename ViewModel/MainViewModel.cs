@@ -1,5 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
-using Covers.Model;
+using System.Windows.Media;
 
 namespace Covers.ViewModel
 {
@@ -11,8 +11,6 @@ namespace Covers.ViewModel
   /// </summary>
   public class MainViewModel : ViewModelBase
   {
-    private readonly IDataService _dataService;
-
     /// <summary>
     /// The <see cref="WelcomeTitle" /> property's name.
     /// </summary>
@@ -39,20 +37,9 @@ namespace Covers.ViewModel
     /// <summary>
     /// Initializes a new instance of the MainViewModel class.
     /// </summary>
-    public MainViewModel(IDataService dataService)
+    public MainViewModel()
     {
-      _dataService = dataService;
-      _dataService.GetData(
-          (item, error) =>
-          {
-            if (error != null)
-            {
-                    // Report error here
-                    return;
-            }
-
-            WelcomeTitle = item.Title;
-          });
+      Color c = new Color();
     }
 
     ////public override void Cleanup()
