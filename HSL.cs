@@ -12,6 +12,7 @@ using System.Windows.Media;
 
 namespace Christo.GFX.Conversion
 {
+  [Serializable]
   /// <summary>
   /// Color Util Exception
   /// </summary>
@@ -243,7 +244,7 @@ namespace Christo.GFX.Conversion
       }
       catch (Exception ee)
       {
-        throw new Exception("HSL Color Error");
+        throw new Exception("HSL Color Error", ee);
       }
       //System.Drawing.Color.FromArgb()rgb
 

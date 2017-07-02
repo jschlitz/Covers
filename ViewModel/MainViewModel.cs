@@ -1,5 +1,9 @@
 ﻿using GalaSoft.MvvmLight;
+using System.Globalization;
+using System.Windows;
 using System.Windows.Media;
+using System.Linq;
+using System.Windows.Media.Imaging;
 
 namespace Covers.ViewModel
 {
@@ -11,27 +15,16 @@ namespace Covers.ViewModel
   /// </summary>
   public class MainViewModel : ViewModelBase
   {
-    /// <summary>
-    /// The <see cref="WelcomeTitle" /> property's name.
-    /// </summary>
-    public const string WelcomeTitlePropertyName = "WelcomeTitle";
 
-    private string _welcomeTitle = string.Empty;
-
+    private Color _KeyColor = Colors.Goldenrod;
     /// <summary>
-    /// Gets the WelcomeTitle property.
+    /// Gets the KeyColor property.
     /// Changes to that property's value raise the PropertyChanged event. 
     /// </summary>
-    public string WelcomeTitle
+    public Color KeyColor
     {
-      get
-      {
-        return _welcomeTitle;
-      }
-      set
-      {
-        Set(ref _welcomeTitle, value);
-      }
+      get => _KeyColor;
+      set => Set(ref _KeyColor, value);
     }
 
     /// <summary>
@@ -39,7 +32,23 @@ namespace Covers.ViewModel
     /// </summary>
     public MainViewModel()
     {
-      Color c = new Color();
+    }
+
+
+
+    public void Experiment01()
+    {
+
+      //var ellipseDrawing =
+      //  new GeometryDrawing(
+      //      new SolidColorBrush(KeyColor),
+      //      new Pen(Brushes.Black, 4),
+      //      new EllipseGeometry(new Point(50, 50), 50, 50));
+      
+      //omg: no.
+      //var text = new GlyphRunDrawing(Brushes.Black, new GlyphRun(GlyphTypefaces.))
+
+      //DrawingGroup
     }
 
     ////public override void Cleanup()
