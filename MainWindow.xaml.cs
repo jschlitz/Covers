@@ -34,10 +34,13 @@ namespace Covers
 
       DrawingVisual drawingVisual = new DrawingVisual();
       DrawingContext drawingContext = drawingVisual.RenderOpen();
+      drawingContext.DrawRectangle(Brushes.Goldenrod, new Pen(Brushes.DarkGoldenrod, 1.0), new Rect(1, 1, 178, 178));
+
       drawingContext.DrawText(text, new Point(2, 2));
       drawingContext.Close();
+      
 
-      RenderTargetBitmap bmp = new RenderTargetBitmap(180, 180, 120, 96, PixelFormats.Pbgra32);
+      RenderTargetBitmap bmp = new RenderTargetBitmap(180, 180, 96, 96, PixelFormats.Pbgra32);
       bmp.Render(drawingVisual);
       myImage.Source = bmp;
 
