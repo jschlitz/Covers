@@ -248,7 +248,7 @@ namespace Christo.GFX.Conversion
       }
       //System.Drawing.Color.FromArgb()rgb
 
-      return new Color() { R = (byte)(t[0] * 255), G = (byte)(t[1] * 255), B = (byte)(t[2] * 255) };
+      return new Color() {A=255,  R = (byte)(t[0] * 255), G = (byte)(t[1] * 255), B = (byte)(t[2] * 255) };
     }
 
     /// <summary>

@@ -22,33 +22,12 @@ namespace Covers
       Closing += (s, e) => ViewModelLocator.Cleanup();
     }
 
-    public void RenderTargetBitmapExample(Image myImage)
-    {
-
-      FormattedText text = new FormattedText("Hello World",
-              new CultureInfo("en-us"),
-              FlowDirection.LeftToRight,
-              //new Typeface(Fonts.SystemFontFamilies.First(), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
-              new Typeface(new FontFamily("Times New Roman"), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
-              12, Brushes.Black);
-
-      DrawingVisual drawingVisual = new DrawingVisual();
-      DrawingContext drawingContext = drawingVisual.RenderOpen();
-      drawingContext.DrawRectangle(Brushes.Goldenrod, new Pen(Brushes.DarkGoldenrod, 1.0), new Rect(1, 1, 178, 178));
-
-      drawingContext.DrawText(text, new Point(2, 2));
-      drawingContext.Close();
-      
-
-      RenderTargetBitmap bmp = new RenderTargetBitmap(180, 180, 96, 96, PixelFormats.Pbgra32);
-      bmp.Render(drawingVisual);
-      myImage.Source = bmp;
-
-    }
-
     private void Button_Click(object sender, RoutedEventArgs e)
     {
-      RenderTargetBitmapExample(TheImage);
+      var mvm = (MainViewModel)DataContext;
+
+      mvm.RenderTargetBitmapExample(SmallImage);
+      mvm.RenderTargetBitmapExample(BigImage);
     }
   }
 }

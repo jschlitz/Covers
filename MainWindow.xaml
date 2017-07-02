@@ -4,10 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ignore="http://www.galasoft.ch/ignore"
+        Height="500" Width="500"
         mc:Ignorable="d ignore"
-        Height="300"
-        Width="300"
-        Title="MVVM Light Application"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
 
   <Window.Resources>
@@ -20,11 +18,29 @@
 
   <Grid x:Name="LayoutRoot">
     <Grid.ColumnDefinitions>
-      <ColumnDefinition/>
-      <ColumnDefinition/>
+      <ColumnDefinition Width="auto"/>
+      <ColumnDefinition Width="auto"/>
+      <ColumnDefinition Width="auto"/>
     </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="auto" />
+    </Grid.RowDefinitions>
 
-    <Button Margin="4" Grid.Column="0" Click="Button_Click">Go!</Button>
-    <Image Grid.Column="1" x:Name="TheImage"></Image>
+    <StackPanel Grid.Column="0"  Grid.Row="0" >
+    </StackPanel>
+    <Button Margin="4" Click="Button_Click" Grid.Column="0"  Grid.Row="1"  Width="50">
+      Go!
+    </Button>
+
+    <Image Margin="4" Grid.Column="1" x:Name="SmallImage"  
+             Width="100" Height="160">
+      
+    </Image>
+
+    <Image Grid.Column="2"  x:Name="BigImage"
+             Width="250" Height="400">      
+    </Image>
+
   </Grid>
 </Window>
