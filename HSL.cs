@@ -81,24 +81,24 @@ namespace Christo.GFX.Conversion
       }
     }
 
-    /// <summary>
-    /// Constructor with RGB color
-    /// </summary>
-    /// <param name="r">Red component with a value from 0 to 255</param>
-    /// <param name="g">Green component with a value from 0 to 255</param>
-    /// <param name="b">Blue component with a value from 0 to 255</param>
-    public HSL(byte r, byte g, byte b)
-    {
-      try
-      {
-        System.Drawing.Color temp = System.Drawing.Color.FromArgb(r, g, b);
-        this.HSLHelper(temp.GetHue() / 360.0, temp.GetSaturation(), temp.GetBrightness());
-      }
-      catch (Exception ee)
-      {
-        throw new GFXConversionException("HSL Constructor Error", ee);
-      }
-    }
+    ///// <summary>
+    ///// Constructor with RGB color
+    ///// </summary>
+    ///// <param name="r">Red component with a value from 0 to 255</param>
+    ///// <param name="g">Green component with a value from 0 to 255</param>
+    ///// <param name="b">Blue component with a value from 0 to 255</param>
+    //public HSL(byte r, byte g, byte b)
+    //{
+    //  try
+    //  {
+    //    System.Drawing.Color temp = System.Drawing.Color.FromArgb(r, g, b);
+    //    this.HSLHelper(temp.GetHue() / 360.0, temp.GetSaturation(), temp.GetBrightness());
+    //  }
+    //  catch (Exception ee)
+    //  {
+    //    throw new GFXConversionException("HSL Constructor Error", ee);
+    //  }
+    //}
 
     /// <summary>
     /// Constructor with HSL
