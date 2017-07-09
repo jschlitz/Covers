@@ -7,6 +7,8 @@ using System.Linq;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Covers.ViewModel
 {
@@ -29,13 +31,14 @@ namespace Covers.ViewModel
       get => _KeyColor;
       set => Set(ref _KeyColor, value);
     }
+    Random _R = new Random();
 
     /// <summary>
     /// Initializes a new instance of the MainViewModel class.
     /// </summary>
     public MainViewModel()
     {
-      var what = new HSL(30.0/360.0, 0.66, 0.66);
+      var what = new HSL(_R.NextDouble(), 0.4 + 0.4 * _R.NextDouble(), 0.4 + 0.4 * _R.NextDouble());
       KeyColor = what.GetColor();
     }
 
@@ -56,28 +59,34 @@ namespace Covers.ViewModel
 
       var keyPalette = GetPalette(keyHsl);
       var key = keyPalette[2];
-      HSL t1 = new HSL(ShiftHue(keyHsl.H, 150.0 / 360.0), keyHsl.S, keyHsl.L);
-      HSL t2 = new HSL(ShiftHue(keyHsl.H, 210.0 / 360.0), keyHsl.S, keyHsl.L);
+      HSL a1 = new HSL(ShiftHue(keyHsl.H, 30.0 / 360.0), keyHsl.S, keyHsl.L);
+      HSL c1 = new HSL(ShiftHue(keyHsl.H, 180.0 / 360.0), keyHsl.S, keyHsl.L);
+      HSL a2 = new HSL(ShiftHue(keyHsl.H, 330.0 / 360.0), keyHsl.S, keyHsl.L);
 
-      var triad1 = GetPalette(t1);
-      var triad2 = GetPalette(t2);
-      var foo = new [] {keyPalette, triad1, triad2};
+      var analog1 = GetPalette(a1);
+      var analog2 = GetPalette(a2);
+      var complement = GetPalette(c1);
+      var foo = new Brush[][] {keyPalette, analog1, complement, analog2,
+        GetLgbPalette(keyHsl), GetLgbPalette(a1), GetLgbPalette(c1), GetLgbPalette(a2),
+        GetLgbPalette2(keyHsl), GetLgbPalette2(a1), GetLgbPalette2(c1), GetLgbPalette2(a2),
+      };
 
       DrawingVisual dv = new DrawingVisual();
       DrawingContext dc = dv.RenderOpen();
 
       //Background
-      dc.DrawRectangle(key, nonPen, new Rect(0, 0, myImage.Width, myImage.Height));
+      //dc.DrawRectangle(key, nonPen, new Rect(0, 0, myImage.Width, myImage.Height));
 
       var lgb = new LinearGradientBrush(keyPalette[1].Color, keyPalette[3].Color, 90.0);
 
       //Chevrons
-      for (int i = -1; i < 10; i++)
+      for (int i = -2; i < 10; i++)
       {
-        DrawChevron(0, i * myImage.Height / 10.0, myImage.Width, myImage.Height / 10.0, nonPen, foo[toggle][(i + 1) % foo[toggle].Length], dc);
+        var brushArray = foo[toggle];
+        DrawChevron(0, i * myImage.Height / 10.0, myImage.Width, myImage.Height / 10.0, nonPen, brushArray[(i + 2) % brushArray.Length], dc);
       }
 
-      toggle = (toggle + 1) % 3;
+      toggle = (toggle + 1) % foo.Length;
 
       //Oval!
       dc.DrawEllipse(Brushes.White, nonPen, new Point(myImage.Width / 2.0, text.Height / 2.0 + myImage.Height / 5.0),
@@ -98,18 +107,60 @@ namespace Covers.ViewModel
       return result < 1.0 ? result : result - 1.0;
     }
 
-    private static SolidColorBrush[] GetPalette(HSL hsl)
+    private static Color[] GetColors(HSL key)
     {
-      var result = new[] {
-        new SolidColorBrush((new HSL(hsl.H, 1.0 * hsl.S / 3.0, hsl.L + 2.0 * (1.0 - hsl.L) / 3.0)).GetColor()),
-        new SolidColorBrush((new HSL(hsl.H, 2.0 * hsl.S / 3.0, hsl.L + 1.0 * (1.0 - hsl.L) / 3.0)).GetColor()),
-        new SolidColorBrush(hsl.GetColor()),
-        new SolidColorBrush((new HSL(hsl.H, hsl.S + 1.0 * (1.0 - hsl.S) / 3.0, 2.0 * hsl.L / 3.0)).GetColor()),
-        new SolidColorBrush((new HSL(hsl.H, hsl.S + 2.0 * (1.0 - hsl.S) / 3.0, 1.0 * hsl.L / 3.0)).GetColor())
+      return new[] 
+      {
+        (new HSL(key.H, 1.0 * key.S / 3.0, key.L + 2.0 * (1.0 - key.L) / 3.0)).GetColor(),
+        (new HSL(key.H, 2.0 * key.S / 3.0, key.L + 1.0 * (1.0 - key.L) / 3.0)).GetColor(),
+        key.GetColor(),
+        (new HSL(key.H, key.S + 1.0 * (1.0 - key.S) / 3.0, 2.0 * key.L / 3.0)).GetColor(),
+        (new HSL(key.H, key.S + 2.0 * (1.0 - key.S) / 3.0, 1.0 * key.L / 3.0)).GetColor()
       };
+    }
+
+    private static SolidColorBrush[] GetPalette(HSL key)
+    {
+      var result = GetColors(key).Select(c => new SolidColorBrush(c)).ToArray();
       foreach (var b in result)
         b.Freeze();
 
+      return result;
+    }
+
+    private static LinearGradientBrush[] GetLgbPalette(HSL key)
+    {
+      var colors = GetColors(key);
+      var result = new LinearGradientBrush[colors.Length - 1];
+      for (int i = 0; i < colors.Length - 1; i++)
+      {
+        result[i] =
+          new LinearGradientBrush(colors[i], colors[i + 1], 90.0);
+        result[i].Freeze();
+      }
+      return result;
+    }
+
+    private static IEnumerable<Color> WidenColors(IEnumerable<Color> input)
+    {
+      yield return Colors.White;
+      foreach (var item in input)
+        yield return item;
+      yield return Colors.Black;
+      yield break;
+    }
+
+    private static LinearGradientBrush[] GetLgbPalette2(HSL key)
+    {
+
+      var colors = WidenColors(GetColors(key)).ToArray();
+      var result = new LinearGradientBrush[colors.Length - 1];
+      for (int i = 0; i < colors.Length - 1; i++)
+      {
+        result[i] =
+          new LinearGradientBrush(colors[i], colors[i + 1], 90.0);
+        result[i].Freeze();
+      }
       return result;
     }
 
