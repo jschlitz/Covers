@@ -3,8 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xceed="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:ignore="http://www.galasoft.ch/ignore"
-        Height="500" Width="500"
+        Height="500" MinWidth="500"
         mc:Ignorable="d ignore"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
 
@@ -18,7 +19,7 @@
 
   <Grid x:Name="LayoutRoot">
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="auto"/>
+      <ColumnDefinition Width="auto" MinWidth="100"/>
       <ColumnDefinition Width="auto"/>
       <ColumnDefinition Width="auto"/>
     </Grid.ColumnDefinitions>
@@ -27,8 +28,22 @@
       <RowDefinition Height="auto" />
     </Grid.RowDefinitions>
 
-    <StackPanel Grid.Column="0"  Grid.Row="0" >
-    </StackPanel>
+    <Grid Grid.Column="0"  Grid.Row="0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="auto"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
+      
+      <Label Margin="4" Grid.Row="0" Grid.Column="0" >Key color</Label>
+      <xceed:ColorPicker Margin="4" Grid.Row="0" Grid.Column="1" Width="60" SelectedColor="{Binding KeyColor}" AvailableColorsSortingMode="HueSaturationBrightness" ShowStandardColors="False" ColorMode="ColorCanvas"/>
+    </Grid>
     <Button Margin="4" Click="Button_Click" Grid.Column="0"  Grid.Row="1"  Width="50">
       Go!
     </Button>
