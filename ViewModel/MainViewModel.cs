@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Covers.ViewModel
 {
@@ -20,6 +21,23 @@ namespace Covers.ViewModel
   /// </summary>
   public class MainViewModel : ViewModelBase
   {
+    /// <summary>
+    /// Initializes a new instance of the MainViewModel class.
+    /// </summary>
+    public MainViewModel()
+    {
+      KnownBrushes = new ObservableCollection<NamedBrush>();
+
+      var what = new HSL(_R.NextDouble(), 0.4 + 0.4 * _R.NextDouble(), 0.4 + 0.4 * _R.NextDouble());
+      KeyColor = what.GetColor();
+      TextColor = KnownBrushes.First(nb => nb.Name == "Black");
+    }
+    private NamedBrush _TextColor;
+    public NamedBrush TextColor
+    {
+      get => _TextColor;
+      set => Set(ref _TextColor, value);
+    }
 
     private Color _KeyColor;
     /// <summary>
@@ -29,18 +47,34 @@ namespace Covers.ViewModel
     public Color KeyColor
     {
       get => _KeyColor;
-      set => Set(ref _KeyColor, value);
+      set
+      {
+        Set(ref _KeyColor, value);
+
+        KnownBrushes.Clear();
+        var keyHsl = new HSL(_KeyColor);
+        AddBrushes(keyHsl, "Key_");
+        AddBrushes(new HSL(ShiftHue(keyHsl.H, 30.0 / 360.0), keyHsl.S, keyHsl.L), "Analog1_");
+        AddBrushes(new HSL(ShiftHue(keyHsl.H, 330.0 / 360.0), keyHsl.S, keyHsl.L), "Analog2_");
+        AddBrushes(new HSL(ShiftHue(keyHsl.H, 180.0 / 360.0), keyHsl.S, keyHsl.L), "Comp_");
+        KnownBrushes.Add(new NamedBrush() { Name = "Black", Brush = Brushes.Black });
+        KnownBrushes.Add(new NamedBrush() { Name = "White", Brush = Brushes.White});
+      }
     }
+
+    private void AddBrushes(HSL color, string baseName)
+    {
+      foreach (var item in GetPalette(color).Select((b, i) => new NamedBrush { Name = baseName + i, Brush = b }))
+      {
+        item.Brush.Freeze();
+        KnownBrushes.Add(item);
+      }
+    }
+
     Random _R = new Random();
 
-    /// <summary>
-    /// Initializes a new instance of the MainViewModel class.
-    /// </summary>
-    public MainViewModel()
-    {
-      var what = new HSL(_R.NextDouble(), 0.4 + 0.4 * _R.NextDouble(), 0.4 + 0.4 * _R.NextDouble());
-      KeyColor = what.GetColor();
-    }
+    public ObservableCollection<NamedBrush> KnownBrushes{ get; set; }
+
 
     private static int toggle = 0;
 
@@ -107,7 +141,7 @@ namespace Covers.ViewModel
       return result < 1.0 ? result : result - 1.0;
     }
 
-    private static Color[] GetColors(HSL key)
+    private static Color[] GetShades(HSL key)
     {
       return new[] 
       {
@@ -121,7 +155,7 @@ namespace Covers.ViewModel
 
     private static SolidColorBrush[] GetPalette(HSL key)
     {
-      var result = GetColors(key).Select(c => new SolidColorBrush(c)).ToArray();
+      var result = GetShades(key).Select(c => new SolidColorBrush(c)).ToArray();
       foreach (var b in result)
         b.Freeze();
 
@@ -130,7 +164,7 @@ namespace Covers.ViewModel
 
     private static LinearGradientBrush[] GetLgbPalette(HSL key)
     {
-      var colors = GetColors(key);
+      var colors = GetShades(key);
       var result = new LinearGradientBrush[colors.Length - 1];
       for (int i = 0; i < colors.Length - 1; i++)
       {
@@ -153,7 +187,7 @@ namespace Covers.ViewModel
     private static LinearGradientBrush[] GetLgbPalette2(HSL key)
     {
 
-      var colors = WidenColors(GetColors(key)).ToArray();
+      var colors = WidenColors(GetShades(key)).ToArray();
       var result = new LinearGradientBrush[colors.Length - 1];
       for (int i = 0; i < colors.Length - 1; i++)
       {
@@ -187,5 +221,11 @@ namespace Covers.ViewModel
 
     ////    base.Cleanup();
     ////}
+  }
+
+  public class NamedBrush
+  {
+    public string Name { get; set; }
+    public SolidColorBrush Brush { get; set; }
   }
 }

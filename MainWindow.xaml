@@ -43,6 +43,20 @@
       
       <Label Margin="4" Grid.Row="0" Grid.Column="0" >Key color</Label>
       <xceed:ColorPicker Margin="4" Grid.Row="0" Grid.Column="1" Width="60" SelectedColor="{Binding KeyColor}" AvailableColorsSortingMode="HueSaturationBrightness" ShowStandardColors="False" ColorMode="ColorCanvas"/>
+    
+      <Label Margin="4" Grid.Row="1" Grid.Column="0" >TextColor</Label>
+      <ComboBox Margin="4" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding KnownBrushes}" MinWidth="80" SelectedItem="{Binding TextColor}">
+        <ComboBox.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Orientation="Horizontal" MinWidth="80">
+              <Border Width="20" Height="20" Background="{Binding Brush}" BorderBrush="{Binding Brush}" CornerRadius="3" />
+              <TextBlock Text="{Binding Name}" Margin="4,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+          </DataTemplate>
+        </ComboBox.ItemTemplate>
+      </ComboBox>
+
+
     </Grid>
     <Button Margin="4" Click="Button_Click" Grid.Column="0"  Grid.Row="1"  Width="50">
       Go!
