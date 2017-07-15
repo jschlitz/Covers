@@ -27,16 +27,26 @@ namespace Covers.ViewModel
     public MainViewModel()
     {
       KnownBrushes = new ObservableCollection<NamedBrush>();
+      BrushDict = new Dictionary<string, SolidColorBrush>();
 
       var what = new HSL(_R.NextDouble(), 0.4 + 0.4 * _R.NextDouble(), 0.4 + 0.4 * _R.NextDouble());
       KeyColor = what.GetColor();
       TextColor = KnownBrushes.First(nb => nb.Name == "Black");
+      BgColor = BrushDict["Key_0"];
     }
+
     private NamedBrush _TextColor;
     public NamedBrush TextColor
     {
       get => _TextColor;
       set => Set(ref _TextColor, value);
+    }
+
+    private Brush _BgColor;
+    public Brush BgColor
+    {
+      get => _BgColor;
+      set => Set(ref _BgColor, value);
     }
 
     private Color _KeyColor;
@@ -58,21 +68,29 @@ namespace Covers.ViewModel
         AddBrushes(new HSL(ShiftHue(keyHsl.H, 330.0 / 360.0), keyHsl.S, keyHsl.L), "Analog2_");
         AddBrushes(new HSL(ShiftHue(keyHsl.H, 180.0 / 360.0), keyHsl.S, keyHsl.L), "Comp_");
         KnownBrushes.Add(new NamedBrush() { Name = "Black", Brush = Brushes.Black });
-        KnownBrushes.Add(new NamedBrush() { Name = "White", Brush = Brushes.White});
+        KnownBrushes.Add(new NamedBrush() { Name = "White", Brush = Brushes.White });
+
+        RaisePropertyChanged("BrushDict");
       }
     }
+
 
     private void AddBrushes(HSL color, string baseName)
     {
       foreach (var item in GetPalette(color).Select((b, i) => new NamedBrush { Name = baseName + i, Brush = b }))
       {
         item.Brush.Freeze();
+        BrushDict[item.Name] = item.Brush;
         KnownBrushes.Add(item);
+        //TODO: could I use a converter? but those are usually static resources in the xaml, not dynamic items of the VM. hmm
+        //TODO: Multibinding with a converter... first arg the dictionary, 2nd one the key?
+        
       }
     }
 
     Random _R = new Random();
 
+    public Dictionary<string, SolidColorBrush> BrushDict { get; set; }
     public ObservableCollection<NamedBrush> KnownBrushes{ get; set; }
 
 
@@ -85,7 +103,7 @@ namespace Covers.ViewModel
               FlowDirection.LeftToRight,
               //new Typeface(Fonts.SystemFontFamilies.First(), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
               new Typeface(new FontFamily("Helvetica"), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
-              myImage.Width / 10.0, Brushes.Black);
+              myImage.Width / 10.0, this.TextColor.Brush);
 
       var nonPen = new Pen(Brushes.DarkBlue, 0.0);
 

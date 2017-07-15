@@ -14,6 +14,12 @@
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Skins/MainSkin.xaml" />
       </ResourceDictionary.MergedDictionaries>
+      <DataTemplate x:Key="ColorCombo">
+        <StackPanel Orientation="Horizontal" MinWidth="80">
+          <Border Width="20" Height="20" Background="{Binding Brush}" BorderBrush="{Binding Brush}" CornerRadius="3" />
+          <TextBlock Text="{Binding Name}" Margin="4,0,0,0" VerticalAlignment="Center"/>
+        </StackPanel>
+      </DataTemplate>
     </ResourceDictionary>
   </Window.Resources>
 
@@ -42,19 +48,25 @@
       </Grid.RowDefinitions>
       
       <Label Margin="4" Grid.Row="0" Grid.Column="0" >Key color</Label>
-      <xceed:ColorPicker Margin="4" Grid.Row="0" Grid.Column="1" Width="60" SelectedColor="{Binding KeyColor}" AvailableColorsSortingMode="HueSaturationBrightness" ShowStandardColors="False" ColorMode="ColorCanvas"/>
-    
-      <Label Margin="4" Grid.Row="1" Grid.Column="0" >TextColor</Label>
-      <ComboBox Margin="4" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding KnownBrushes}" MinWidth="80" SelectedItem="{Binding TextColor}">
+      <xceed:ColorPicker Margin="4" Grid.Row="0" Grid.Column="1" Width="90" SelectedColor="{Binding KeyColor}" AvailableColorsSortingMode="HueSaturationBrightness" ShowStandardColors="False" ColorMode="ColorCanvas"/>
+
+      <Label Margin="4" Grid.Row="1" Grid.Column="0">Text</Label>
+      <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding KnownBrushes}" 
+                Margin="4" Width="90" SelectedItem="{Binding TextColor}"  ItemTemplate="{StaticResource ColorCombo}"/>
+
+      <Label Margin="4" Grid.Row="2" Grid.Column="0">Background</Label>
+      <ComboBox Grid.Column="1" Grid.Row="2" ItemsSource="{Binding BrushDict}" 
+                Margin="4" Width="90" SelectedItem="{Binding BgColor}" ><!--won't work because that's binding to the kvp, not the text nor the Brush. And the dictionary doesn't dynamically update anyway.-->
         <ComboBox.ItemTemplate>
-          <DataTemplate>
+          <DataTemplate >
             <StackPanel Orientation="Horizontal" MinWidth="80">
-              <Border Width="20" Height="20" Background="{Binding Brush}" BorderBrush="{Binding Brush}" CornerRadius="3" />
-              <TextBlock Text="{Binding Name}" Margin="4,0,0,0" VerticalAlignment="Center"/>
+              <Border Width="20" Height="20" Background="{Binding Value}" BorderBrush="{Binding Value}" CornerRadius="3" />
+              <TextBlock Text="{Binding Key}" Margin="4,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
           </DataTemplate>
         </ComboBox.ItemTemplate>
       </ComboBox>
+
 
 
     </Grid>
