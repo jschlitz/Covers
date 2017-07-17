@@ -4,20 +4,28 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xceed="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:vm="clr-namespace:Covers.ViewModel"
         xmlns:ignore="http://www.galasoft.ch/ignore"
         Height="500" MinWidth="500"
         mc:Ignorable="d ignore"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
 
   <Window.Resources>
-    <ResourceDictionary>
+    
+    <ResourceDictionary>      
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Skins/MainSkin.xaml" />
       </ResourceDictionary.MergedDictionaries>
+      
+      <vm:BrushConverter x:Key="TheBrushConverter"/>
+
       <DataTemplate x:Key="ColorCombo">
         <StackPanel Orientation="Horizontal" MinWidth="80">
-          <Border Width="20" Height="20" Background="{Binding Brush}" BorderBrush="{Binding Brush}" CornerRadius="3" />
-          <TextBlock Text="{Binding Name}" Margin="4,0,0,0" VerticalAlignment="Center"/>
+          <Border Width="20" Height="20"                       
+                      Background="{Binding Converter={StaticResource TheBrushConverter}}"
+                      BorderBrush="{Binding Converter={StaticResource TheBrushConverter}}"
+                      CornerRadius="3" />
+          <TextBlock Text="{Binding}" Margin="4,0,0,0" VerticalAlignment="Center"/>
         </StackPanel>
       </DataTemplate>
     </ResourceDictionary>
@@ -48,20 +56,26 @@
       </Grid.RowDefinitions>
       
       <Label Margin="4" Grid.Row="0" Grid.Column="0" >Key color</Label>
-      <xceed:ColorPicker Margin="4" Grid.Row="0" Grid.Column="1" Width="90" SelectedColor="{Binding KeyColor}" AvailableColorsSortingMode="HueSaturationBrightness" ShowStandardColors="False" ColorMode="ColorCanvas"/>
+      <xceed:ColorPicker Margin="4" Grid.Row="0" Grid.Column="1" Width="110" 
+                         SelectedColorChanged="ColorPicker_SelectedColorChanged"
+                         SelectedColor="{Binding KeyColor}" AvailableColorsSortingMode="HueSaturationBrightness" ShowStandardColors="False" ColorMode="ColorCanvas"/>
 
       <Label Margin="4" Grid.Row="1" Grid.Column="0">Text</Label>
-      <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding KnownBrushes}" 
-                Margin="4" Width="90" SelectedItem="{Binding TextColor}"  ItemTemplate="{StaticResource ColorCombo}"/>
+      <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding BrushNameList}" x:Name="TextCombo"
+                Margin="4" Width="110" SelectedItem="{Binding TextColor}"  ItemTemplate="{StaticResource ColorCombo}"/>
 
       <Label Margin="4" Grid.Row="2" Grid.Column="0">Background</Label>
-      <ComboBox Grid.Column="1" Grid.Row="2" ItemsSource="{Binding BrushDict}" 
-                Margin="4" Width="90" SelectedItem="{Binding BgColor}" ><!--won't work because that's binding to the kvp, not the text nor the Brush. And the dictionary doesn't dynamically update anyway.-->
+      <ComboBox Grid.Column="1" Grid.Row="2"  
+                ItemsSource="{Binding NamedBrushes}" x:Name="BgCombo" 
+                Margin="4" Width="110" SelectedItem="{Binding BgColor}" >
         <ComboBox.ItemTemplate>
           <DataTemplate >
             <StackPanel Orientation="Horizontal" MinWidth="80">
-              <Border Width="20" Height="20" Background="{Binding Value}" BorderBrush="{Binding Value}" CornerRadius="3" />
-              <TextBlock Text="{Binding Key}" Margin="4,0,0,0" VerticalAlignment="Center"/>
+              <Border Width="20" Height="20"                       
+                      Background="{Binding Brush}"
+                      BorderBrush="{Binding Brush}"
+                      CornerRadius="3" />
+              <TextBlock Text="{Binding Name}" Margin="4,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
           </DataTemplate>
         </ComboBox.ItemTemplate>

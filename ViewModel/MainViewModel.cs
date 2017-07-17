@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Data;
 
 namespace Covers.ViewModel
 {
@@ -26,24 +27,29 @@ namespace Covers.ViewModel
     /// </summary>
     public MainViewModel()
     {
-      KnownBrushes = new ObservableCollection<NamedBrush>();
-      BrushDict = new Dictionary<string, SolidColorBrush>();
+      //TODO: maybe a datatrigger on the datatemplate?
+      //TODO: aslo, kill off the dead code here
 
+      BrushNameList = new ObservableCollection<string>();
+      NamedBrushes = new ObservableCollection<NamedBrush>();
       var what = new HSL(_R.NextDouble(), 0.4 + 0.4 * _R.NextDouble(), 0.4 + 0.4 * _R.NextDouble());
       KeyColor = what.GetColor();
-      TextColor = KnownBrushes.First(nb => nb.Name == "Black");
-      BgColor = BrushDict["Key_0"];
+      TextColor = "Black";
+      BgColor = NamedBrushes.First(); //TODO do better
     }
+    public ObservableCollection<NamedBrush> NamedBrushes { get; set; }
 
-    private NamedBrush _TextColor;
-    public NamedBrush TextColor
+    public ObservableCollection<string> BrushNameList { get; set; }
+
+    private string _TextColor;
+    public string TextColor
     {
       get => _TextColor;
       set => Set(ref _TextColor, value);
     }
 
-    private Brush _BgColor;
-    public Brush BgColor
+    private NamedBrush _BgColor;
+    public NamedBrush BgColor
     {
       get => _BgColor;
       set => Set(ref _BgColor, value);
@@ -61,38 +67,68 @@ namespace Covers.ViewModel
       {
         Set(ref _KeyColor, value);
 
-        KnownBrushes.Clear();
         var keyHsl = new HSL(_KeyColor);
         AddBrushes(keyHsl, "Key_");
         AddBrushes(new HSL(ShiftHue(keyHsl.H, 30.0 / 360.0), keyHsl.S, keyHsl.L), "Analog1_");
         AddBrushes(new HSL(ShiftHue(keyHsl.H, 330.0 / 360.0), keyHsl.S, keyHsl.L), "Analog2_");
         AddBrushes(new HSL(ShiftHue(keyHsl.H, 180.0 / 360.0), keyHsl.S, keyHsl.L), "Comp_");
-        KnownBrushes.Add(new NamedBrush() { Name = "Black", Brush = Brushes.Black });
-        KnownBrushes.Add(new NamedBrush() { Name = "White", Brush = Brushes.White });
+        BrushConverter.TheBrushes["Black"] = Brushes.Black;
+        BrushConverter.TheBrushes["White"] = Brushes.White;
 
-        RaisePropertyChanged("BrushDict");
+        if(!BrushNameList.Any())
+        {
+          foreach (var item in BrushConverter.TheBrushes.Keys.OrderBy(s=>s))
+          {
+            BrushNameList.Add(item);
+          }
+        }
+
+        //do does making NamedBrush a Inotifypropertychanged do the job?
+        //TODO: do this less stupidly:
+        if (!NamedBrushes.Any())
+        {
+          foreach (var item in BrushConverter.TheBrushes.Keys.OrderBy(s => s))
+          {
+            NamedBrushes.Add(new NamedBrush { Name = item, Brush = BrushConverter.TheBrushes[item] });
+          }
+        }
+        else
+        {
+          foreach (var item in NamedBrushes)
+          {
+            item.Brush = BrushConverter.TheBrushes[item.Name];
+          }
+        }
+
+
+        //doesn't do it
+        RaisePropertyChanged("BrushNameList");
+        //TODO: oddly, the dropdown will be correct as long as you don't look at it. as soon as you do, it is stuck
+
+
+        //more not working stuff.
+        //RaisePropertyChanged("BrushDict");
       }
     }
 
 
     private void AddBrushes(HSL color, string baseName)
     {
-      foreach (var item in GetPalette(color).Select((b, i) => new NamedBrush { Name = baseName + i, Brush = b }))
+      var pal = GetPalette(color);
+      for (int i = 0; i < pal.Length; i++)
       {
-        item.Brush.Freeze();
-        BrushDict[item.Name] = item.Brush;
-        KnownBrushes.Add(item);
-        //TODO: could I use a converter? but those are usually static resources in the xaml, not dynamic items of the VM. hmm
-        //TODO: Multibinding with a converter... first arg the dictionary, 2nd one the key?
-        
+        pal[i].Freeze();
+        BrushConverter.TheBrushes[baseName + i] = pal[i];
       }
+        //didn't work
+        //var kb2 = KnownBrushes2.FirstOrDefault(kb => kb.Name == item.Name);
+        //if (kb2 != null)
+        //  kb2.Brush = item.Brush;
+        //else
+        //  KnownBrushes2.Add(item);
     }
 
     Random _R = new Random();
-
-    public Dictionary<string, SolidColorBrush> BrushDict { get; set; }
-    public ObservableCollection<NamedBrush> KnownBrushes{ get; set; }
-
 
     private static int toggle = 0;
 
@@ -103,7 +139,7 @@ namespace Covers.ViewModel
               FlowDirection.LeftToRight,
               //new Typeface(Fonts.SystemFontFamilies.First(), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
               new Typeface(new FontFamily("Helvetica"), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
-              myImage.Width / 10.0, this.TextColor.Brush);
+              myImage.Width / 10.0, BrushConverter.TheBrushes[TextColor]);
 
       var nonPen = new Pen(Brushes.DarkBlue, 0.0);
 
@@ -241,9 +277,30 @@ namespace Covers.ViewModel
     ////}
   }
 
-  public class NamedBrush
+  public class NamedBrush : ViewModelBase
   {
-    public string Name { get; set; }
-    public SolidColorBrush Brush { get; set; }
+    string _Name;
+    SolidColorBrush _Brush;
+    public string Name { get => _Name; set=>Set(ref _Name,value); }
+    public SolidColorBrush Brush { get=>_Brush; set=>Set(ref _Brush, value); }
+  }
+
+  public class BrushConverter : IValueConverter
+  {
+    public static Dictionary<string, SolidColorBrush> TheBrushes { get; set; } = new Dictionary<string, SolidColorBrush>();
+
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+      var k = value.ToString();
+      if (TheBrushes != null &&  TheBrushes.ContainsKey(k)) //I shouldn't have to guard null here, but the designer is flipping out.
+        return TheBrushes[k];
+      else
+        return Brushes.Black;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+      throw new NotImplementedException();
+    }
   }
 }
