@@ -17,15 +17,13 @@
         <ResourceDictionary Source="Skins/MainSkin.xaml" />
       </ResourceDictionary.MergedDictionaries>
       
-      <vm:BrushConverter x:Key="TheBrushConverter"/>
-
-      <DataTemplate x:Key="ColorCombo">
+      <DataTemplate x:Key="ColorCombo2">
         <StackPanel Orientation="Horizontal" MinWidth="80">
           <Border Width="20" Height="20"                       
-                      Background="{Binding Converter={StaticResource TheBrushConverter}}"
-                      BorderBrush="{Binding Converter={StaticResource TheBrushConverter}}"
+                      Background="{Binding Brush}"
+                      BorderBrush="{Binding Brush}"
                       CornerRadius="3" />
-          <TextBlock Text="{Binding}" Margin="4,0,0,0" VerticalAlignment="Center"/>
+          <TextBlock Text="{Binding Name}" Margin="4,0,0,0" VerticalAlignment="Center"/>
         </StackPanel>
       </DataTemplate>
     </ResourceDictionary>
@@ -61,24 +59,12 @@
                          SelectedColor="{Binding KeyColor}" AvailableColorsSortingMode="HueSaturationBrightness" ShowStandardColors="False" ColorMode="ColorCanvas"/>
 
       <Label Margin="4" Grid.Row="1" Grid.Column="0">Text</Label>
-      <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding BrushNameList}" x:Name="TextCombo"
-                Margin="4" Width="110" SelectedItem="{Binding TextColor}"  ItemTemplate="{StaticResource ColorCombo}"/>
+      <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding NamedBrushes}" x:Name="TextCombo"
+                Margin="4" Width="110" SelectedItem="{Binding TextColor}"  ItemTemplate="{StaticResource ColorCombo2}"/>
 
       <Label Margin="4" Grid.Row="2" Grid.Column="0">Background</Label>
-      <ComboBox Grid.Column="1" Grid.Row="2"  
-                ItemsSource="{Binding NamedBrushes}" x:Name="BgCombo" 
-                Margin="4" Width="110" SelectedItem="{Binding BgColor}" >
-        <ComboBox.ItemTemplate>
-          <DataTemplate >
-            <StackPanel Orientation="Horizontal" MinWidth="80">
-              <Border Width="20" Height="20"                       
-                      Background="{Binding Brush}"
-                      BorderBrush="{Binding Brush}"
-                      CornerRadius="3" />
-              <TextBlock Text="{Binding Name}" Margin="4,0,0,0" VerticalAlignment="Center"/>
-            </StackPanel>
-          </DataTemplate>
-        </ComboBox.ItemTemplate>
+      <ComboBox Grid.Column="1" Grid.Row="2"  ItemsSource="{Binding NamedBrushes}" x:Name="BgCombo" 
+                Margin="4" Width="110" SelectedItem="{Binding BgColor}"  ItemTemplate="{StaticResource ColorCombo2}">
       </ComboBox>
 
 

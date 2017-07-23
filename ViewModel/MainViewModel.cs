@@ -27,22 +27,19 @@ namespace Covers.ViewModel
     /// </summary>
     public MainViewModel()
     {
-      //TODO: maybe a datatrigger on the datatemplate?
-      //TODO: aslo, kill off the dead code here
-
-      BrushNameList = new ObservableCollection<string>();
+      TheBrushes = new Dictionary<string, Brush>();//two views of the same data, really
       NamedBrushes = new ObservableCollection<NamedBrush>();
       var what = new HSL(_R.NextDouble(), 0.4 + 0.4 * _R.NextDouble(), 0.4 + 0.4 * _R.NextDouble());
       KeyColor = what.GetColor();
-      TextColor = "Black";
-      BgColor = NamedBrushes.First(); //TODO do better
+      TextColor = NamedBrushes.First(nb => nb.Name == "Black");
+      BgColor = NamedBrushes.First(nb => nb.Name.StartsWith("Key")); 
     }
     public ObservableCollection<NamedBrush> NamedBrushes { get; set; }
 
     public ObservableCollection<string> BrushNameList { get; set; }
 
-    private string _TextColor;
-    public string TextColor
+    private NamedBrush _TextColor;
+    public NamedBrush TextColor
     {
       get => _TextColor;
       set => Set(ref _TextColor, value);
@@ -72,45 +69,32 @@ namespace Covers.ViewModel
         AddBrushes(new HSL(ShiftHue(keyHsl.H, 30.0 / 360.0), keyHsl.S, keyHsl.L), "Analog1_");
         AddBrushes(new HSL(ShiftHue(keyHsl.H, 330.0 / 360.0), keyHsl.S, keyHsl.L), "Analog2_");
         AddBrushes(new HSL(ShiftHue(keyHsl.H, 180.0 / 360.0), keyHsl.S, keyHsl.L), "Comp_");
-        BrushConverter.TheBrushes["Black"] = Brushes.Black;
-        BrushConverter.TheBrushes["White"] = Brushes.White;
-
-        if(!BrushNameList.Any())
-        {
-          foreach (var item in BrushConverter.TheBrushes.Keys.OrderBy(s=>s))
-          {
-            BrushNameList.Add(item);
-          }
-        }
+        TheBrushes["Black"] = Brushes.Black;
+        TheBrushes["White"] = Brushes.White;
+        TheBrushes["Transparent"] = Brushes.Transparent;
 
         //do does making NamedBrush a Inotifypropertychanged do the job?
         //TODO: do this less stupidly:
         if (!NamedBrushes.Any())
         {
-          foreach (var item in BrushConverter.TheBrushes.Keys.OrderBy(s => s))
-          {
-            NamedBrushes.Add(new NamedBrush { Name = item, Brush = BrushConverter.TheBrushes[item] });
-          }
+          foreach (var item in TheBrushes.Keys.OrderBy(s => s))
+            NamedBrushes.Add(new NamedBrush { Name = item, Brush = TheBrushes[item] });
         }
         else
         {
           foreach (var item in NamedBrushes)
-          {
-            item.Brush = BrushConverter.TheBrushes[item.Name];
-          }
+            item.Brush = TheBrushes[item.Name];
         }
-
 
         //doesn't do it
         RaisePropertyChanged("BrushNameList");
-        //TODO: oddly, the dropdown will be correct as long as you don't look at it. as soon as you do, it is stuck
-
 
         //more not working stuff.
         //RaisePropertyChanged("BrushDict");
       }
     }
 
+    private Dictionary<string, Brush> TheBrushes;
 
     private void AddBrushes(HSL color, string baseName)
     {
@@ -118,7 +102,7 @@ namespace Covers.ViewModel
       for (int i = 0; i < pal.Length; i++)
       {
         pal[i].Freeze();
-        BrushConverter.TheBrushes[baseName + i] = pal[i];
+        TheBrushes[baseName + i] = pal[i];
       }
         //didn't work
         //var kb2 = KnownBrushes2.FirstOrDefault(kb => kb.Name == item.Name);
@@ -139,7 +123,7 @@ namespace Covers.ViewModel
               FlowDirection.LeftToRight,
               //new Typeface(Fonts.SystemFontFamilies.First(), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
               new Typeface(new FontFamily("Helvetica"), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
-              myImage.Width / 10.0, BrushConverter.TheBrushes[TextColor]);
+              myImage.Width / 10.0, TextColor.Brush);
 
       var nonPen = new Pen(Brushes.DarkBlue, 0.0);
 
@@ -177,7 +161,7 @@ namespace Covers.ViewModel
       toggle = (toggle + 1) % foo.Length;
 
       //Oval!
-      dc.DrawEllipse(Brushes.White, nonPen, new Point(myImage.Width / 2.0, text.Height / 2.0 + myImage.Height / 5.0),
+      dc.DrawEllipse(BgColor.Brush, nonPen, new Point(myImage.Width / 2.0, text.Height / 2.0 + myImage.Height / 5.0),
         0.9 * myImage.Width / 2.0, 0.9 * (text.Height / 2.0 + myImage.Height / 10.0));
 
       //The text
@@ -280,27 +264,27 @@ namespace Covers.ViewModel
   public class NamedBrush : ViewModelBase
   {
     string _Name;
-    SolidColorBrush _Brush;
+    Brush _Brush;
     public string Name { get => _Name; set=>Set(ref _Name,value); }
-    public SolidColorBrush Brush { get=>_Brush; set=>Set(ref _Brush, value); }
+    public Brush Brush { get=>_Brush; set=>Set(ref _Brush, value); }
   }
 
-  public class BrushConverter : IValueConverter
-  {
-    public static Dictionary<string, SolidColorBrush> TheBrushes { get; set; } = new Dictionary<string, SolidColorBrush>();
+  //public class BrushConverter : IValueConverter
+  //{
+  //  public static Dictionary<string, SolidColorBrush> TheBrushes { get; set; } = new Dictionary<string, SolidColorBrush>();
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-      var k = value.ToString();
-      if (TheBrushes != null &&  TheBrushes.ContainsKey(k)) //I shouldn't have to guard null here, but the designer is flipping out.
-        return TheBrushes[k];
-      else
-        return Brushes.Black;
-    }
+  //  public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+  //  {
+  //    var k = value.ToString();
+  //    if (TheBrushes != null &&  TheBrushes.ContainsKey(k)) //I shouldn't have to guard null here, but the designer is flipping out.
+  //      return TheBrushes[k];
+  //    else
+  //      return Brushes.Black;
+  //  }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-      throw new NotImplementedException();
-    }
-  }
+  //  public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+  //  {
+  //    throw new NotImplementedException();
+  //  }
+  //}
 }
