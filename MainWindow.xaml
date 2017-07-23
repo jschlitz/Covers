@@ -54,18 +54,45 @@
       </Grid.RowDefinitions>
       
       <Label Margin="4" Grid.Row="0" Grid.Column="0" >Key color</Label>
-      <xceed:ColorPicker Margin="4" Grid.Row="0" Grid.Column="1" Width="110" 
+      <xceed:ColorPicker Margin="4" Grid.Row="0" Grid.Column="1" Width="120" 
                          SelectedColorChanged="ColorPicker_SelectedColorChanged"
                          SelectedColor="{Binding KeyColor}" AvailableColorsSortingMode="HueSaturationBrightness" ShowStandardColors="False" ColorMode="ColorCanvas"/>
 
       <Label Margin="4" Grid.Row="1" Grid.Column="0">Text</Label>
       <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding NamedBrushes}" x:Name="TextCombo"
-                Margin="4" Width="110" SelectedItem="{Binding TextColor}"  ItemTemplate="{StaticResource ColorCombo2}"/>
+                Margin="4" Width="120" SelectedItem="{Binding TextColor}"  ItemTemplate="{StaticResource ColorCombo2}"/>
 
       <Label Margin="4" Grid.Row="2" Grid.Column="0">Background</Label>
       <ComboBox Grid.Column="1" Grid.Row="2"  ItemsSource="{Binding NamedBrushes}" x:Name="BgCombo" 
-                Margin="4" Width="110" SelectedItem="{Binding BgColor}"  ItemTemplate="{StaticResource ColorCombo2}">
+                Margin="4" Width="120" SelectedItem="{Binding BgColor}"  ItemTemplate="{StaticResource ColorCombo2}">
       </ComboBox>
+
+      <ListView Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding BrushCycle}">
+        <ListView.View>
+          <GridView>
+            <GridView.Columns>
+              <!--<GridViewColumn Width ="40" Header="Name" DisplayMemberBinding="{Binding Caption}">-->
+              <GridViewColumn Width ="40" Header="Name">
+                <GridViewColumn.CellTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding Caption}"/>
+                  </DataTemplate>
+                </GridViewColumn.CellTemplate>
+              </GridViewColumn>
+              <GridViewColumn Width="120" Header="Selection">
+                <GridViewColumn.CellTemplate>
+                  <DataTemplate>
+                    <ComboBox ItemsSource="{Binding NamedBrushes}" SelectedItem="{Binding Brush}">
+                      
+                    </ComboBox>
+                  </DataTemplate>
+                </GridViewColumn.CellTemplate>
+              </GridViewColumn>
+              
+            </GridView.Columns>
+          </GridView>
+        </ListView.View>
+      </ListView>
 
 
 

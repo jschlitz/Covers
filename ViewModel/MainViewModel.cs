@@ -32,11 +32,20 @@ namespace Covers.ViewModel
       var what = new HSL(_R.NextDouble(), 0.4 + 0.4 * _R.NextDouble(), 0.4 + 0.4 * _R.NextDouble());
       KeyColor = what.GetColor();
       TextColor = NamedBrushes.First(nb => nb.Name == "Black");
-      BgColor = NamedBrushes.First(nb => nb.Name.StartsWith("Key")); 
+      BgColor = NamedBrushes.First(nb => nb.Name.StartsWith("Key"));
+      var merp = (Foo: "Foo", Fnord: BgColor);
+      BrushCycle[0] = (Caption:"Cover1", Brush: NamedBrushes.First(nb => nb.Name.StartsWith("Transparent")));
+      for (int i = 0; i < 5; i++)
+      {
+        BrushCycle[i+1] = (Caption: $"Cover{i+2}", Brush: NamedBrushes.First(nb => nb.Name == $"Key_{i}"));
+      }
+      BrushCycle[6] = (Caption: "Cover6", Brush: NamedBrushes.First(nb => nb.Name.StartsWith("Transparent")));
     }
+    //TODO: should I replace NamedBrush with a tuple too?
+
     public ObservableCollection<NamedBrush> NamedBrushes { get; set; }
 
-    public ObservableCollection<string> BrushNameList { get; set; }
+    public (string Caption, NamedBrush Brush)[] BrushCycle => new(string Caption, NamedBrush Brush)[7];
 
     private NamedBrush _TextColor;
     public NamedBrush TextColor
