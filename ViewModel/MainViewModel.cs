@@ -34,18 +34,19 @@ namespace Covers.ViewModel
       TextColor = NamedBrushes.First(nb => nb.Name == "Black");
       BgColor = NamedBrushes.First(nb => nb.Name.StartsWith("Key"));
       var merp = (Foo: "Foo", Fnord: BgColor);
-      BrushCycle[0] = (Caption:"Cover1", Brush: NamedBrushes.First(nb => nb.Name.StartsWith("Transparent")));
+      BrushCycle = new BruchCycleVM[7];
+      BrushCycle[0] = new BruchCycleVM { Caption = "Cover1", Brush = NamedBrushes.First(nb => nb.Name.StartsWith("Transparent")) };
       for (int i = 0; i < 5; i++)
       {
-        BrushCycle[i+1] = (Caption: $"Cover{i+2}", Brush: NamedBrushes.First(nb => nb.Name == $"Key_{i}"));
+        BrushCycle[i + 1] = new BruchCycleVM { Caption= $"Cover{i + 2}", Brush= NamedBrushes.First(nb => nb.Name == $"Key_{i}") };
       }
-      BrushCycle[6] = (Caption: "Cover6", Brush: NamedBrushes.First(nb => nb.Name.StartsWith("Transparent")));
+      BrushCycle[6] = new BruchCycleVM { Caption = "Cover7", Brush = NamedBrushes.First(nb => nb.Name.StartsWith("Transparent")) };
     }
     //TODO: should I replace NamedBrush with a tuple too?
 
     public ObservableCollection<NamedBrush> NamedBrushes { get; set; }
 
-    public (string Caption, NamedBrush Brush)[] BrushCycle => new(string Caption, NamedBrush Brush)[7];
+    public BruchCycleVM[] BrushCycle { get; private set; }
 
     private NamedBrush _TextColor;
     public NamedBrush TextColor
@@ -270,11 +271,20 @@ namespace Covers.ViewModel
     ////}
   }
 
+  public class BruchCycleVM : ViewModelBase
+  {
+    string _Caption;
+    public string Caption { get => _Caption; set => Set(ref _Caption, value); }
+    NamedBrush _Brush;
+    public NamedBrush Brush { get => _Brush; set => Set(ref _Brush, value); }
+  }
   public class NamedBrush : ViewModelBase
   {
     string _Name;
+    string _Caption;
     Brush _Brush;
-    public string Name { get => _Name; set=>Set(ref _Name,value); }
+    public string Caption { get => _Caption; set => Set(ref _Caption, value); }
+    public string Name { get => _Name; set => Set(ref _Name, value); }
     public Brush Brush { get=>_Brush; set=>Set(ref _Brush, value); }
   }
 

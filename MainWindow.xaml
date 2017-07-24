@@ -72,17 +72,19 @@
           <GridView>
             <GridView.Columns>
               <!--<GridViewColumn Width ="40" Header="Name" DisplayMemberBinding="{Binding Caption}">-->
-              <GridViewColumn Width ="40" Header="Name">
+              <GridViewColumn Width ="60" Header="Name">
                 <GridViewColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding Caption}"/>
                   </DataTemplate>
                 </GridViewColumn.CellTemplate>
               </GridViewColumn>
-              <GridViewColumn Width="120" Header="Selection">
+              <GridViewColumn Width="140" Header="Selection">
                 <GridViewColumn.CellTemplate>
                   <DataTemplate>
-                    <ComboBox ItemsSource="{Binding NamedBrushes}" SelectedItem="{Binding Brush}">
+                    <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.NamedBrushes}" 
+                              Width="120"
+                              SelectedItem="{Binding Brush}" ItemTemplate="{StaticResource ColorCombo2}">
                       
                     </ComboBox>
                   </DataTemplate>
