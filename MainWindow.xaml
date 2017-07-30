@@ -51,6 +51,7 @@
         <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
       </Grid.RowDefinitions>
       
       <Label Margin="4" Grid.Row="0" Grid.Column="0" >Key color</Label>
@@ -96,10 +97,16 @@
         </ListView.View>
       </ListView>
 
+      <CheckBox Grid.Row="4" Grid.ColumnSpan="2" Margin="4" IsChecked="{Binding UseGradient}">
+        Use gradient
+      </CheckBox>
+
+      <TextBlock Margin="4" Grid.Row="5" Grid.Column="0">Title</TextBlock>
+      <TextBox Margin="4" Grid.Row="5" Grid.Column="1" Height="57" Text="{Binding Title}"/>
 
 
     </Grid>
-    <Button Margin="4" Click="Button_Click" Grid.Column="0"  Grid.Row="1"  Width="50">
+    <Button Margin="4" Click="Button_Click" Grid.Column="0"  Grid.Row="1"  Width="100">
       Go!
     </Button>
 

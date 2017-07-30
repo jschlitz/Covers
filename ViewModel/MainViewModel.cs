@@ -27,7 +27,8 @@ namespace Covers.ViewModel
     /// </summary>
     public MainViewModel()
     {
-      TheBrushes = new Dictionary<string, Brush>();//two views of the same data, really
+      Title = "Lorem\rIpsum Dolor";
+      TheBrushes = new Dictionary<string, SolidColorBrush>();//two views of the same data, really
       NamedBrushes = new ObservableCollection<NamedBrush>();
       var what = new HSL(_R.NextDouble(), 0.4 + 0.4 * _R.NextDouble(), 0.4 + 0.4 * _R.NextDouble());
       KeyColor = what.GetColor();
@@ -53,6 +54,19 @@ namespace Covers.ViewModel
     {
       get => _TextColor;
       set => Set(ref _TextColor, value);
+    }
+
+    private bool _UseGradient;
+    public bool UseGradient
+    {
+      get => _UseGradient;
+      set => Set(ref _UseGradient, value);
+    }
+    private string _Title;
+    public string Title
+    {
+      get => _Title;
+      set => Set(ref _Title, value);
     }
 
     private NamedBrush _BgColor;
@@ -104,8 +118,7 @@ namespace Covers.ViewModel
       }
     }
 
-    private Dictionary<string, Brush> TheBrushes;
-
+    private Dictionary<string, SolidColorBrush> TheBrushes;
     private void AddBrushes(HSL color, string baseName)
     {
       var pal = GetPalette(color);
@@ -124,14 +137,11 @@ namespace Covers.ViewModel
 
     Random _R = new Random();
 
-    private static int toggle = 0;
-
     public void RenderTargetBitmapExample(Image myImage)
     {
-      FormattedText text = new FormattedText("Lorem Ipsum Dolor",
+      FormattedText titleText = new FormattedText(Title,
               new CultureInfo("en-us"),
               FlowDirection.LeftToRight,
-              //new Typeface(Fonts.SystemFontFamilies.First(), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
               new Typeface(new FontFamily("Helvetica"), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
               myImage.Width / 10.0, TextColor.Brush);
 
@@ -139,43 +149,43 @@ namespace Covers.ViewModel
 
       var keyHsl = new HSL(KeyColor);
 
-      var keyPalette = GetPalette(keyHsl);
-      var key = keyPalette[2];
-      HSL a1 = new HSL(ShiftHue(keyHsl.H, 30.0 / 360.0), keyHsl.S, keyHsl.L);
-      HSL c1 = new HSL(ShiftHue(keyHsl.H, 180.0 / 360.0), keyHsl.S, keyHsl.L);
-      HSL a2 = new HSL(ShiftHue(keyHsl.H, 330.0 / 360.0), keyHsl.S, keyHsl.L);
+      //var keyPalette = GetPalette(keyHsl);
+      //var key = keyPalette[2];
+      //HSL a1 = new HSL(ShiftHue(keyHsl.H, 30.0 / 360.0), keyHsl.S, keyHsl.L);
+      //HSL c1 = new HSL(ShiftHue(keyHsl.H, 180.0 / 360.0), keyHsl.S, keyHsl.L);
+      //HSL a2 = new HSL(ShiftHue(keyHsl.H, 330.0 / 360.0), keyHsl.S, keyHsl.L);
 
-      var analog1 = GetPalette(a1);
-      var analog2 = GetPalette(a2);
-      var complement = GetPalette(c1);
-      var foo = new Brush[][] {keyPalette, analog1, complement, analog2,
-        GetLgbPalette(keyHsl), GetLgbPalette(a1), GetLgbPalette(c1), GetLgbPalette(a2),
-        GetLgbPalette2(keyHsl), GetLgbPalette2(a1), GetLgbPalette2(c1), GetLgbPalette2(a2),
-      };
+      //var analog1 = GetPalette(a1);
+      //var analog2 = GetPalette(a2);
+      //var complement = GetPalette(c1);
 
       DrawingVisual dv = new DrawingVisual();
       DrawingContext dc = dv.RenderOpen();
-
-      //Background
-      //dc.DrawRectangle(key, nonPen, new Rect(0, 0, myImage.Width, myImage.Height));
-
-      var lgb = new LinearGradientBrush(keyPalette[1].Color, keyPalette[3].Color, 90.0);
+      var scBrushes = BrushCycle.Select(bcvm => bcvm.Brush.Brush).Where(b => b != Brushes.Transparent).ToArray();
+      Brush[] brushes;
+      if (this.UseGradient)
+      {
+        brushes = new Brush[scBrushes.Length - 1];
+        for (int i = 0; i < scBrushes.Length-1; i++)
+          brushes[i] = new LinearGradientBrush(scBrushes[i].Color, scBrushes[i+1].Color, 90.0);
+      }
+      else
+      {
+        brushes = scBrushes.Select(b => b as Brush).ToArray();
+      }
 
       //Chevrons
       for (int i = -2; i < 10; i++)
       {
-        var brushArray = foo[toggle];
-        DrawChevron(0, i * myImage.Height / 10.0, myImage.Width, myImage.Height / 10.0, nonPen, brushArray[(i + 2) % brushArray.Length], dc);
+        DrawChevron(0, i * myImage.Height / 10.0, myImage.Width, myImage.Height / 10.0, nonPen, brushes[(i + 2) % brushes.Length], dc);
       }
 
-      toggle = (toggle + 1) % foo.Length;
-
       //Oval!
-      dc.DrawEllipse(BgColor.Brush, nonPen, new Point(myImage.Width / 2.0, text.Height / 2.0 + myImage.Height / 5.0),
-        0.9 * myImage.Width / 2.0, 0.9 * (text.Height / 2.0 + myImage.Height / 10.0));
+      dc.DrawEllipse(BgColor.Brush, nonPen, new Point(myImage.Width / 2.0, titleText.Height / 2.0 + myImage.Height / 5.0),
+        0.9 * myImage.Width / 2.0, 0.9 * (titleText.Height / 2.0 + myImage.Height / 10.0));
 
       //The text
-      dc.DrawText(text, new Point((myImage.Width - text.Width) / 2.0, myImage.Height / 5.0));
+      dc.DrawText(titleText, new Point((myImage.Width - titleText.Width) / 2.0, myImage.Height / 5.0));
       dc.Close();
 
       RenderTargetBitmap bmp = new RenderTargetBitmap((int)myImage.Width, (int)myImage.Height, 96, 96, PixelFormats.Pbgra32);
@@ -282,10 +292,10 @@ namespace Covers.ViewModel
   {
     string _Name;
     string _Caption;
-    Brush _Brush;
+    SolidColorBrush _Brush;
     public string Caption { get => _Caption; set => Set(ref _Caption, value); }
     public string Name { get => _Name; set => Set(ref _Name, value); }
-    public Brush Brush { get=>_Brush; set=>Set(ref _Brush, value); }
+    public SolidColorBrush Brush { get=>_Brush; set=>Set(ref _Brush, value); }
   }
 
   //public class BrushConverter : IValueConverter
