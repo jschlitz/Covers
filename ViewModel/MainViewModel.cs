@@ -28,12 +28,13 @@ namespace Covers.ViewModel
     public MainViewModel()
     {
       Title = "Lorem\rIpsum Dolor";
+      Author = "Tracy A Canfield";
       TheBrushes = new Dictionary<string, SolidColorBrush>();//two views of the same data, really
       NamedBrushes = new ObservableCollection<NamedBrush>();
       var what = new HSL(_R.NextDouble(), 0.4 + 0.4 * _R.NextDouble(), 0.4 + 0.4 * _R.NextDouble());
       KeyColor = what.GetColor();
       TextColor = NamedBrushes.First(nb => nb.Name == "Black");
-      BgColor = NamedBrushes.First(nb => nb.Name.StartsWith("Key"));
+      BgColor = NamedBrushes.First(nb => nb.Name.StartsWith("Comp"));
       var merp = (Foo: "Foo", Fnord: BgColor);
       BrushCycle = new BruchCycleVM[7];
       BrushCycle[0] = new BruchCycleVM { Caption = "Cover1", Brush = NamedBrushes.First(nb => nb.Name.StartsWith("Transparent")) };
@@ -67,6 +68,13 @@ namespace Covers.ViewModel
     {
       get => _Title;
       set => Set(ref _Title, value);
+    }
+
+    private string _Author;
+    public string Author
+    {
+      get => _Author;
+      set => Set(ref _Author, value);
     }
 
     private NamedBrush _BgColor;
@@ -139,11 +147,7 @@ namespace Covers.ViewModel
 
     public void RenderTargetBitmapExample(Image myImage)
     {
-      FormattedText titleText = new FormattedText(Title,
-              new CultureInfo("en-us"),
-              FlowDirection.LeftToRight,
-              new Typeface(new FontFamily("Helvetica"), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
-              myImage.Width / 10.0, TextColor.Brush);
+      
 
       var nonPen = new Pen(Brushes.DarkBlue, 0.0);
 
@@ -180,12 +184,33 @@ namespace Covers.ViewModel
         DrawChevron(0, i * myImage.Height / 10.0, myImage.Width, myImage.Height / 10.0, nonPen, brushes[(i + 2) % brushes.Length], dc);
       }
 
+      FormattedText titleText = new FormattedText(Title,
+              new CultureInfo("en-us"),
+              FlowDirection.LeftToRight,
+              new Typeface(new FontFamily("Helvetica"), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
+              myImage.Width / 10.0, TextColor.Brush);
+
       //Oval!
       dc.DrawEllipse(BgColor.Brush, nonPen, new Point(myImage.Width / 2.0, titleText.Height / 2.0 + myImage.Height / 5.0),
         0.9 * myImage.Width / 2.0, 0.9 * (titleText.Height / 2.0 + myImage.Height / 10.0));
 
       //The text
-      dc.DrawText(titleText, new Point((myImage.Width - titleText.Width) / 2.0, myImage.Height / 5.0));
+      titleText.TextAlignment = TextAlignment.Center;
+      dc.DrawText(titleText, new Point((myImage.Width) / 2.0, myImage.Height / 5.0));
+
+      //author
+      FormattedText authorText = new FormattedText(Author,
+              new CultureInfo("en-us"),
+              FlowDirection.LeftToRight,
+              new Typeface(new FontFamily("Helvetica"), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
+              myImage.Width / 10.0, TextColor.Brush);
+      authorText.TextAlignment = TextAlignment.Center;
+
+      var sz = new Size(authorText.Width * 1.2, authorText.Height * 1.0);
+      var r = new Rect(new Point((myImage.Width - sz.Width) / 2.0, 4.0 * myImage.Height / 5.0), sz);
+      dc.DrawRectangle(BgColor.Brush, nonPen, r);
+      dc.DrawText(authorText, new Point((myImage.Width) / 2.0, 4.0* myImage.Height / 5.0));
+
       dc.Close();
 
       RenderTargetBitmap bmp = new RenderTargetBitmap((int)myImage.Width, (int)myImage.Height, 96, 96, PixelFormats.Pbgra32);

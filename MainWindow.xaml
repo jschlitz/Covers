@@ -6,7 +6,8 @@
         xmlns:xceed="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:vm="clr-namespace:Covers.ViewModel"
         xmlns:ignore="http://www.galasoft.ch/ignore"
-        Height="500" MinWidth="500"
+        Height="600" Width="600"
+        
         mc:Ignorable="d ignore"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
 
@@ -46,6 +47,8 @@
         <ColumnDefinition Width="auto"/>
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
@@ -102,8 +105,10 @@
       </CheckBox>
 
       <TextBlock Margin="4" Grid.Row="5" Grid.Column="0">Title</TextBlock>
-      <TextBox Margin="4" Grid.Row="5" Grid.Column="1" Height="57" Text="{Binding Title}"/>
+      <TextBox Margin="4" Grid.Row="5" Grid.Column="1" Height="57" Text="{Binding Title}" TextWrapping="Wrap" AcceptsReturn="True"/>
 
+      <TextBlock Margin="4" Grid.Row="6" Grid.Column="0">Author</TextBlock>
+      <TextBox Margin="4" Grid.Row="6" Grid.Column="1" Text="{Binding Author}"/>
 
     </Grid>
     <Button Margin="4" Click="Button_Click" Grid.Column="0"  Grid.Row="1"  Width="100">
