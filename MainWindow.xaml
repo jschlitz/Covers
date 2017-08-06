@@ -12,12 +12,12 @@
         DataContext="{Binding Main, Source={StaticResource Locator}}">
 
   <Window.Resources>
-    
-    <ResourceDictionary>      
+
+    <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Skins/MainSkin.xaml" />
       </ResourceDictionary.MergedDictionaries>
-      
+
       <DataTemplate x:Key="ColorCombo2">
         <StackPanel Orientation="Horizontal" MinWidth="80">
           <Border Width="20" Height="20"                       
@@ -55,8 +55,10 @@
         <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
       </Grid.RowDefinitions>
-      
+
       <Label Margin="4" Grid.Row="0" Grid.Column="0" >Key color</Label>
       <xceed:ColorPicker Margin="4" Grid.Row="0" Grid.Column="1" Width="120" 
                          SelectedColorChanged="ColorPicker_SelectedColorChanged"
@@ -71,7 +73,12 @@
                 Margin="4" Width="120" SelectedItem="{Binding BgColor}"  ItemTemplate="{StaticResource ColorCombo2}">
       </ComboBox>
 
-      <ListView Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding BrushCycle}">
+      <Label Margin="4" Grid.Row="3" Grid.Column="0">Border</Label>
+      <ComboBox Grid.Column="1" Grid.Row="3"  ItemsSource="{Binding NamedBrushes}" x:Name="BgBorder" 
+                Margin="4" Width="120" SelectedItem="{Binding BgBorder}"  ItemTemplate="{StaticResource ColorCombo2}">
+      </ComboBox>
+
+      <ListView Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" ItemsSource="{Binding BrushCycle}">
         <ListView.View>
           <GridView>
             <GridView.Columns>
@@ -89,39 +96,47 @@
                     <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.NamedBrushes}" 
                               Width="120"
                               SelectedItem="{Binding Brush}" ItemTemplate="{StaticResource ColorCombo2}">
-                      
+
                     </ComboBox>
                   </DataTemplate>
                 </GridViewColumn.CellTemplate>
               </GridViewColumn>
-              
+
             </GridView.Columns>
           </GridView>
         </ListView.View>
       </ListView>
 
-      <CheckBox Grid.Row="4" Grid.ColumnSpan="2" Margin="4" IsChecked="{Binding UseGradient}">
+      <CheckBox Grid.Row="5" Grid.ColumnSpan="2" Margin="4" IsChecked="{Binding UseGradient}">
         Use gradient
       </CheckBox>
 
-      <TextBlock Margin="4" Grid.Row="5" Grid.Column="0">Title</TextBlock>
-      <TextBox Margin="4" Grid.Row="5" Grid.Column="1" Height="57" Text="{Binding Title}" TextWrapping="Wrap" AcceptsReturn="True"/>
+      <TextBlock Margin="4" Grid.Row="6" Grid.Column="0">Title</TextBlock>
+      <TextBox Margin="4" Grid.Row="6" Grid.Column="1" Height="57" Text="{Binding Title}" TextWrapping="Wrap" AcceptsReturn="True"/>
 
-      <TextBlock Margin="4" Grid.Row="6" Grid.Column="0">Author</TextBlock>
-      <TextBox Margin="4" Grid.Row="6" Grid.Column="1" Text="{Binding Author}"/>
+      <TextBlock Margin="4" Grid.Row="7" Grid.Column="0">Author</TextBlock>
+      <TextBox Margin="4" Grid.Row="7" Grid.Column="1" Text="{Binding Author}"/>
 
     </Grid>
-    <Button Margin="4" Click="Button_Click" Grid.Column="0"  Grid.Row="1"  Width="100">
+    
+    <Button Margin="4" Click="Button_Click" Width="100" Grid.Column="0"  Grid.Row="1">
       Go!
     </Button>
 
+    <StackPanel Orientation="Horizontal" 
+                Grid.ColumnSpan="2" Grid.Column="1"  Grid.Row="1" HorizontalAlignment="Right">
+      <Button Margin="4" Width="100" x:Name="SaveButton" Click="SaveButton_Click">
+        Save
+      </Button>
+    </StackPanel>
+
     <Image Margin="4" Grid.Column="1" x:Name="SmallImage"  
-             Width="100" Height="160">
-      
+              Width="100" Height="160">
+
     </Image>
 
     <Image Grid.Column="2"  x:Name="BigImage"
-             Width="250" Height="400">      
+              Width="250" Height="400">
     </Image>
 
   </Grid>

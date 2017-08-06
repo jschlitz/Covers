@@ -28,13 +28,15 @@ namespace Covers.ViewModel
     public MainViewModel()
     {
       Title = "Lorem\rIpsum Dolor";
-      Author = "Tracy A Canfield";
+      Author = "Tracy Canfield";
       TheBrushes = new Dictionary<string, SolidColorBrush>();//two views of the same data, really
       NamedBrushes = new ObservableCollection<NamedBrush>();
       var what = new HSL(_R.NextDouble(), 0.4 + 0.4 * _R.NextDouble(), 0.4 + 0.4 * _R.NextDouble());
       KeyColor = what.GetColor();
+      UseGradient = true;
       TextColor = NamedBrushes.First(nb => nb.Name == "Black");
       BgColor = NamedBrushes.First(nb => nb.Name.StartsWith("Comp"));
+      BgBorder = NamedBrushes.Last(nb => nb.Name.StartsWith("Comp"));
       var merp = (Foo: "Foo", Fnord: BgColor);
       BrushCycle = new BruchCycleVM[7];
       BrushCycle[0] = new BruchCycleVM { Caption = "Cover1", Brush = NamedBrushes.First(nb => nb.Name.StartsWith("Transparent")) };
@@ -82,6 +84,13 @@ namespace Covers.ViewModel
     {
       get => _BgColor;
       set => Set(ref _BgColor, value);
+    }
+
+    private NamedBrush _BgBorder;
+    public NamedBrush BgBorder
+    {
+      get => _BgBorder;
+      set => Set(ref _BgBorder, value);
     }
 
     private Color _KeyColor;
@@ -190,8 +199,11 @@ namespace Covers.ViewModel
               new Typeface(new FontFamily("Helvetica"), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
               myImage.Width / 10.0, TextColor.Brush);
 
+      
+      var bgPen = BgBorder.Name == "Transparent" ? nonPen : new Pen(BgBorder.Brush, myImage.Height / 180.0);
+
       //Oval!
-      dc.DrawEllipse(BgColor.Brush, nonPen, new Point(myImage.Width / 2.0, titleText.Height / 2.0 + myImage.Height / 5.0),
+      dc.DrawEllipse(BgColor.Brush, bgPen, new Point(myImage.Width / 2.0, titleText.Height / 2.0 + myImage.Height / 5.0),
         0.9 * myImage.Width / 2.0, 0.9 * (titleText.Height / 2.0 + myImage.Height / 10.0));
 
       //The text
@@ -206,9 +218,12 @@ namespace Covers.ViewModel
               myImage.Width / 10.0, TextColor.Brush);
       authorText.TextAlignment = TextAlignment.Center;
 
-      var sz = new Size(authorText.Width * 1.2, authorText.Height * 1.0);
-      var r = new Rect(new Point((myImage.Width - sz.Width) / 2.0, 4.0 * myImage.Height / 5.0), sz);
-      dc.DrawRectangle(BgColor.Brush, nonPen, r);
+      var sz = new Size(authorText.Width * 1.2, authorText.Height * 2.0);
+      var r = new Rect(new Point(
+          (myImage.Width - sz.Width) / 2.0,
+          4.0 * myImage.Height / 5.0 - (sz.Height - authorText.Height) / 2.0),
+        sz);
+      dc.DrawRectangle(BgColor.Brush, bgPen, r);
       dc.DrawText(authorText, new Point((myImage.Width) / 2.0, 4.0* myImage.Height / 5.0));
 
       dc.Close();
