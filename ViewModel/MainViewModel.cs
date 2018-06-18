@@ -304,7 +304,7 @@ namespace Covers.ViewModel
       {
         sgc.BeginFigure(new Point(x, y), true, false);
         sgc.LineTo(new Point(x + cWidth / 2.0, y + 2 * cHeight), true, false);
-        sgc.LineTo(new Point(x + cWidth / 1.0, y), true, false);
+        sgc.LineTo(new Point(x + cWidth / 1.0, y ), true, false);
         sgc.LineTo(new Point(x + cWidth / 1.0, y + cHeight), true, false);
         sgc.LineTo(new Point(x + cWidth / 2.0, y + 3 * cHeight), true, false);
         sgc.LineTo(new Point(x, y + cHeight), true, true);
