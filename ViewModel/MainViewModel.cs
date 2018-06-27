@@ -196,10 +196,10 @@ namespace Covers.ViewModel
       FormattedText titleText = new FormattedText(Title,
               new CultureInfo("en-us"),
               FlowDirection.LeftToRight,
-              new Typeface(new FontFamily("Helvetica"), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
+              new Typeface(new FontFamily("Signika"), FontStyles.Normal, FontWeights.Normal, new FontStretch()), //Helvetica
               myImage.Width / 10.0, TextColor.Brush);
 
-      
+
       var bgPen = BgBorder.Name == "Transparent" ? nonPen : new Pen(BgBorder.Brush, myImage.Height / 180.0);
 
       //Oval!
@@ -214,7 +214,7 @@ namespace Covers.ViewModel
       FormattedText authorText = new FormattedText(Author,
               new CultureInfo("en-us"),
               FlowDirection.LeftToRight,
-              new Typeface(new FontFamily("Helvetica"), FontStyles.Normal, FontWeights.Normal, new FontStretch()),
+              new Typeface(new FontFamily("Signika"), FontStyles.Normal, FontWeights.Normal, new FontStretch()), //Helvetica
               myImage.Width / 10.0, TextColor.Brush);
       authorText.TextAlignment = TextAlignment.Center;
 

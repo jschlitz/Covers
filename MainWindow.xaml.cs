@@ -33,7 +33,7 @@ namespace Covers
     {
       var mvm = (MainViewModel)DataContext;
 
-      mvm.RenderTargetBitmapExample(SmallImage);
+      //mvm.RenderTargetBitmapExample(SmallImage);
       mvm.RenderTargetBitmapExample(BigImage);
     }
 
@@ -62,10 +62,10 @@ namespace Covers
         using (var fs = new FileStream(SaveDialog.FileName, FileMode.Create))
           encoder.Save(fs);
 
-        encoder = new JpegBitmapEncoder();
-        encoder.Frames.Add(BitmapFrame.Create((BitmapSource)SmallImage.Source));
-        using (var fs = new FileStream(Path.Combine(Path.GetDirectoryName(SaveDialog.FileName), Path.GetFileNameWithoutExtension(SaveDialog.FileName) + "_small.jpg"), FileMode.Create))
-          encoder.Save(fs);
+        //encoder = new JpegBitmapEncoder();
+        //encoder.Frames.Add(BitmapFrame.Create((BitmapSource)SmallImage.Source));
+        //using (var fs = new FileStream(Path.Combine(Path.GetDirectoryName(SaveDialog.FileName), Path.GetFileNameWithoutExtension(SaveDialog.FileName) + "_small.jpg"), FileMode.Create))
+        //  encoder.Save(fs);
       }
     }
   }

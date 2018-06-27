@@ -34,7 +34,6 @@
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="auto" MinWidth="100"/>
       <ColumnDefinition Width="auto"/>
-      <ColumnDefinition Width="auto"/>
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
       <RowDefinition Height="*" />
@@ -118,26 +117,23 @@
       <TextBox Margin="4" Grid.Row="7" Grid.Column="1" Text="{Binding Author}"/>
 
     </Grid>
-    
+
     <Button Margin="4" Click="Button_Click" Width="100" Grid.Column="0"  Grid.Row="1">
       Go!
     </Button>
 
     <StackPanel Orientation="Horizontal" 
-                Grid.ColumnSpan="2" Grid.Column="1"  Grid.Row="1" HorizontalAlignment="Right">
+                Grid.Column="1"  Grid.Row="1" >
       <Button Margin="4" Width="100" x:Name="SaveButton" Click="SaveButton_Click">
         Save
       </Button>
     </StackPanel>
 
-    <Image Margin="4" Grid.Column="1" x:Name="SmallImage"  
-              Width="100" Height="160">
-
-    </Image>
-
-    <Image Grid.Column="2"  x:Name="BigImage"
-              Width="250" Height="400">
-    </Image>
+    <Viewbox Grid.Column="1">
+      <Image x:Name="BigImage" 
+              Width="1600" Height="2560">
+      </Image>
+    </Viewbox>
 
   </Grid>
 </Window>
